@@ -135,7 +135,7 @@ For maintainers preparing releases:
 - [ ] Run integration tests: `bash tests/run-integration-tests.sh`
 - [ ] Commit changes: `git commit -m "chore: prepare release vX.Y.Z"`
 - [ ] Create tag: `git tag -a vX.Y.Z -m "Release vX.Y.Z"`
-- [ ] Push: `git push origin master && git push origin vX.Y.Z`
+- [ ] Push: `git push origin main && git push origin vX.Y.Z`
 
 ---
 

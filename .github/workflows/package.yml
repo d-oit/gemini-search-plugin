@@ -1,0 +1,148 @@
+name: Publish GitHub Package
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish-package:
+    name: Publish to GitHub Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create package archive
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+
+          # Create a clean distribution
+          mkdir -p dist
+
+          # Copy plugin files (exclude development files)
+          tar -czf dist/gemini-search-plugin-${VERSION}.tar.gz \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='tests' \
+            --exclude='.claude' \
+            --exclude='*.log' \
+            --exclude='dist' \
+            --warning=no-file-changed \
+            . || [ $? -eq 1 ]
+
+      - name: Create package metadata
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          cat > dist/package.json << EOF
+          {
+            "name": "@do-ops885/gemini-search-plugin",
+            "version": "${VERSION}",
+            "description": "Advanced web search plugin for Claude Code using Gemini CLI",
+            "repository": {
+              "type": "git",
+              "url": "https://github.com/do-ops885/gemini-search-plugin.git"
+            },
+            "keywords": ["claude-code", "plugin", "gemini", "search", "web-search"],
+            "author": "d.o. <do-tester@proton.me>",
+            "license": "MIT",
+            "homepage": "https://github.com/do-ops885/gemini-search-plugin#readme"
+          }
+          EOF
+
+      - name: Upload package to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/gemini-search-plugin-*.tar.gz
+            dist/package.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate installation instructions
+        run: |
+          VERSION="${{ steps.version.outputs.VERSION }}"
+          cat > dist/INSTALL.md << EOF
+          # Installation Instructions
+
+          ## From GitHub Release
+
+          \`\`\`bash
+          /plugin add https://github.com/do-ops885/gemini-search-plugin
+          \`\`\`
+
+          ## From Package Archive
+
+          1. Download \`gemini-search-plugin-${VERSION}.tar.gz\`
+          2. Extract to your plugins directory:
+             \`\`\`bash
+             mkdir -p ~/.claude/plugins/gemini-search
+             tar -xzf gemini-search-plugin-${VERSION}.tar.gz -C ~/.claude/plugins/gemini-search
+             \`\`\`
+          3. Restart Claude Code
+
+          ## Verify Installation
+
+          \`\`\`bash
+          /plugin list
+          \`\`\`
+
+          You should see \`gemini-search\` in the list.
+
+          ## Usage
+
+          - \`/search [query]\` - Perform web search
+          - \`/search-stats\` - View analytics
+          - \`/clear-cache\` - Clear cache
+
+          ## Documentation
+
+          Full documentation: https://github.com/do-ops885/gemini-search-plugin
+          EOF
+
+      - name: Upload installation instructions
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/INSTALL.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = '${{ steps.version.outputs.VERSION }}';
+            const releaseUrl = context.payload.release.html_url;
+
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.release.id,
+              body: `
+              📦 **Package Published Successfully!**
+
+              ### Installation
+              \`\`\`bash
+              /plugin add https://github.com/do-ops885/gemini-search-plugin
+              \`\`\`
+
+              ### Package Assets
+              - ✅ Plugin archive: \`gemini-search-plugin-${version}.tar.gz\`
+              - ✅ Package metadata: \`package.json\`
+              - ✅ Installation instructions: \`INSTALL.md\`
+
+              ### What's Included
+              - Commands: \`/search\`, \`/search-stats\`, \`/clear-cache\`
+              - Hooks: Error detection, pre-edit suggestions
+              - Agent: Isolated search context
+
+              For detailed documentation, visit the [README](https://github.com/${context.repo.owner}/${context.repo.repo}#readme).
+              `
+            });

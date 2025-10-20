@@ -37,7 +37,7 @@ This document outlines the complete setup for testing, regression prevention, an
 
 ### 3. Repository Configuration
 
-#### Branch Protection (master)
+#### Branch Protection (main)
 - ✅ Require pull request reviews (1 approval)
 - ✅ Dismiss stale reviews
 - ✅ Require linear history
