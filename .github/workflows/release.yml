@@ -96,7 +96,8 @@ jobs:
             --exclude='tests' \
             --exclude='*.log' \
             --exclude='/tmp' \
-            .
+            --warning=no-file-changed \
+            . || [ $? -eq 1 ]
 
       - name: Upload release archive
         uses: softprops/action-gh-release@v1
