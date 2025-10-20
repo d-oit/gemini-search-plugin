@@ -1,0 +1,67 @@
+{
+  "name": "gemini-search-marketplace",
+  "owner": {
+    "name": "d.o.",
+    "email": "do-tester@proton.me"
+  },
+  "plugins": [
+    {
+      "name": "gemini-search",
+      "source": {
+        "type": "github",
+        "repo": "your-username/gemini-search-plugin"
+      },
+      "description": "Advanced web search plugin using the Gemini CLI in headless mode with google_web_search tool restriction, providing caching, analytics, content extraction, and validation for Claude Code",
+      "version": "1.2.0",
+      "author": {
+        "name": "d.o."
+      },
+      "license": "MIT",
+      "homepage": "https://github.com/your-username/gemini-search-plugin",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/your-username/gemini-search-plugin.git"
+      },
+      "keywords": [
+        "search",
+        "web-search",
+        "gemini",
+        "google-search",
+        "caching",
+        "analytics",
+        "content-extraction",
+        "grounded-search"
+      ],
+      "category": "productivity",
+      "commands": "./commands",
+      "agents": "./agents",
+      "hooks": "./hooks/hooks.json",
+      "strict": true,
+      "features": [
+        "Gemini CLI headless mode with google_web_search tool",
+        "Smart caching with 1-hour TTL",
+        "Context isolation for 39% token savings",
+        "Auto-retry logic with exponential backoff",
+        "Dynamic content extraction",
+        "False positive validation",
+        "Comprehensive analytics tracking",
+        "Error detection hooks"
+      ],
+      "requirements": {
+        "dependencies": [
+          {
+            "name": "gemini",
+            "description": "Google Gemini CLI",
+            "install": "npm install -g @google/genai-cli",
+            "required": true
+          },
+          {
+            "name": "jq",
+            "description": "JSON processor for analytics",
+            "required": true
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+# Cache and temporary files
+/tmp/
+*.log
+.cache/
+*.tmp
+*.temp
+
+# Analytics data
+/analytics/
+search-analytics.json
+search-analytics.log
+search-analytics-errors.log
+
+# Cache directories
+gemini-search-cache/
+.gemini-cache/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# Node modules (if any)
+node_modules/
+
+# Test coverage
+coverage/
+*.coverage
+
+# Build artifacts
+dist/
+build/
+
+# Secrets and credentials
+*.key
+*.pem
+*.crt
+secrets/
+credentials/
