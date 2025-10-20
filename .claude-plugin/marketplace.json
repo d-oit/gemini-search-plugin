@@ -12,7 +12,7 @@
         "repo": "do-ops885/gemini-search-plugin"
       },
       "description": "Advanced web search plugin using the Gemini CLI in headless mode with google_web_search tool restriction, providing caching, analytics, content extraction, and validation for Claude Code",
-      "version": "1.2.0",
+      "version": "0.1.0",
       "author": {
         "name": "d.o."
       },

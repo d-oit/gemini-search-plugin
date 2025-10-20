@@ -3,6 +3,7 @@
 Advanced web search plugin using the Gemini CLI in headless mode with `google_web_search` tool restriction, providing caching, analytics, content extraction, and validation for Claude Code.
 
 **Important**: This plugin uses the Gemini CLI with the `google_web_search` tool exclusively via headless mode (`gemini -p` with `--yolo` flag). It does NOT:
+
 - Trigger Claude's internal web search functionality
 - Use direct web scraping or crawling
 - Bypass the Gemini CLI in any way
@@ -12,6 +13,7 @@ The plugin restricts the Gemini CLI to only use the `google_web_search` tool thr
 ## Features
 
 ### 💎 Key Features:
+
 - **Gemini CLI Headless Mode** - Uses `gemini -p` with `--yolo` flag for automated web search
 - **Tool Restriction** - `.gemini/settings.json` limits Gemini to only `google_web_search` tool
 - **Grounded Results** - All search results come from Google's web search via Gemini
@@ -30,17 +32,21 @@ The plugin restricts the Gemini CLI to only use the `google_web_search` tool thr
 ## Commands
 
 ### `/search [query]`
+
 Perform a web search using multiple search engines with smart caching and result validation.
 
 ### `/search-stats`
+
 View usage statistics including cache hit rate, top queries, and token savings.
 
 ### `/clear-cache`
+
 Clear the search result cache and reset analytics data.
 
 ## Architecture
 
 ### Directory Structure
+
 ```
 ~/claude-plugins/gemini-search/
 ├── .claude-plugin/
@@ -68,24 +74,28 @@ Clear the search result cache and reset analytics data.
 ## Advanced Features
 
 ### Dynamic Content Extraction
+
 - Extracts clean text content from web pages
 - Removes HTML tags, scripts, and styling
 - Validates content relevance to search query
 - Handles multiple content sources with fallback methods
 
 ### False Positive Validation
+
 - Validates search results against original query
 - Calculates relevance scores for each result
 - Filters out irrelevant or low-quality content
 - Provides warnings for potentially irrelevant results
 
 ### Comprehensive Error Handling
+
 - Retry logic with exponential backoff
 - Multiple search engine fallbacks
 - Network error handling and recovery
 - Graceful degradation when services are unavailable
 
 ### Logging System
+
 - Detailed logging of search operations
 - Error logging with context information
 - Performance metrics tracking
@@ -96,16 +106,18 @@ Clear the search result cache and reset analytics data.
 ### Prerequisites
 
 1. **Install Gemini CLI**:
+
    ```bash
    npm install -g @google/genai-cli
    ```
 
 2. **Verify Installation**:
+
    ```bash
    gemini --version
    ```
 
-3. **Configure API Key** (if not already done):
+3. **Configure API Key** (optional):
    ```bash
    gemini config set apiKey YOUR_GOOGLE_AI_API_KEY
    ```
@@ -121,6 +133,7 @@ Clear the search result cache and reset analytics data.
 ## Configuration
 
 The plugin can be configured through environment variables:
+
 - `CACHE_TTL`: Cache time-to-live in seconds (default: 3600)
 - `MAX_RETRIES`: Number of retry attempts on failure (default: 3)
 - `RETRY_DELAY`: Initial delay between retries in seconds (default: 1)

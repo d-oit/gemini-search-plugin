@@ -1,6 +1,6 @@
 {
   "name": "gemini-search",
-  "version": "1.2.0",
+  "version": "0.1.0",
   "description": "Advanced web search plugin with caching, analytics, content extraction, and validation",
   "author": "d.o.",
   "license": "MIT",
