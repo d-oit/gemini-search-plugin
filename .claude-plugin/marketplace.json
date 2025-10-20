@@ -9,7 +9,7 @@
       "name": "gemini-search",
       "source": {
         "type": "github",
-        "repo": "your-username/gemini-search-plugin"
+        "repo": "do-ops885/gemini-search-plugin"
       },
       "description": "Advanced web search plugin using the Gemini CLI in headless mode with google_web_search tool restriction, providing caching, analytics, content extraction, and validation for Claude Code",
       "version": "1.2.0",
@@ -17,10 +17,10 @@
         "name": "d.o."
       },
       "license": "MIT",
-      "homepage": "https://github.com/your-username/gemini-search-plugin",
+      "homepage": "https://github.com/do-ops885/gemini-search-plugin",
       "repository": {
         "type": "git",
-        "url": "https://github.com/your-username/gemini-search-plugin.git"
+        "url": "https://github.com/do-ops885/gemini-search-plugin.git"
       },
       "keywords": [
         "search",
