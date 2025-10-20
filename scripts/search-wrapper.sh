@@ -12,6 +12,8 @@ LOG_FILE="${LOG_FILE:-/tmp/gemini-search.log}"
 ERROR_LOG_FILE="${ERROR_LOG_FILE:-/tmp/gemini-search-errors.log}"
 MAX_RETRIES="${MAX_RETRIES:-3}"
 RETRY_DELAY="${RETRY_DELAY:-1}" # seconds
+ENABLE_LINK_VALIDATION="${ENABLE_LINK_VALIDATION:-true}" # Enable static link validation
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Logging function
 log_message() {
@@ -150,14 +152,31 @@ validate_search_result() {
         log_message "DEBUG" "Result failed validation: contains invalid domain"
     fi
     
-    # Additional checks can be added here
-    
+    # Enhanced validation: Check if URL exists (static link check)
+    local url_status="unknown"
+    if [[ "$ENABLE_LINK_VALIDATION" == "true" ]] && [[ "$is_valid" == "true" ]] && [[ -x "$SCRIPT_DIR/validate-links.sh" ]]; then
+        log_message "DEBUG" "Performing static link validation for: $url"
+
+        # Source validation functions
+        source "$SCRIPT_DIR/validate-links.sh"
+
+        # Check if URL exists
+        if check_url_exists "$url"; then
+            url_status="accessible"
+            log_message "DEBUG" "URL is accessible: $url"
+        else
+            url_status="inaccessible"
+            is_valid=false
+            log_message "DEBUG" "URL is not accessible: $url"
+        fi
+    fi
+
     # Return validation result
     if [[ $relevance_percentage -ge 50 ]] && [[ "$is_valid" == "true" ]]; then
-        echo "VALID|$relevance_percentage"  # Valid result with relevance score
+        echo "VALID|$relevance_percentage|$url_status"  # Valid result with relevance score and URL status
         return 0
     else
-        echo "INVALID|$relevance_percentage"  # Invalid result with relevance score
+        echo "INVALID|$relevance_percentage|$url_status"  # Invalid result with relevance score and URL status
         return 1
     fi
 }
