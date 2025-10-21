@@ -1,310 +1,438 @@
 # Contributing to Gemini Search Plugin
 
-Thank you for considering contributing to the Gemini Search Plugin! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to the Gemini Search Plugin! This document provides guidelines and instructions for contributing.
 
 ## Table of Contents
 
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
-- [Development Workflow](#development-workflow)
-- [Testing](#testing)
-- [Submitting Changes](#submitting-changes)
+- [Development Setup](#development-setup)
+- [How to Contribute](#how-to-contribute)
 - [Coding Standards](#coding-standards)
-- [Release Process](#release-process)
+- [Testing Guidelines](#testing-guidelines)
+- [Pull Request Process](#pull-request-process)
+- [Issue Reporting](#issue-reporting)
 
 ## Code of Conduct
 
-By participating in this project, you agree to abide by our Code of Conduct (see CODE_OF_CONDUCT.md).
+This project follows the Anthropic Code of Conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to the project maintainers.
+
+### Our Standards
+
+- Be respectful and inclusive
+- Welcome newcomers and help them learn
+- Focus on what is best for the community
+- Show empathy towards other community members
 
 ## Getting Started
 
 ### Prerequisites
 
-1. **Install Gemini CLI**:
+Before contributing, ensure you have:
+
+1. **Gemini CLI** installed:
+
    ```bash
-   npm install -g @google/genai-cli
+   npm install -g @google/gemini-cli
    ```
 
-2. **Install jq** (for JSON processing):
+2. **Development tools**:
+
    ```bash
-   # macOS
-   brew install jq
-
-   # Ubuntu/Debian
-   sudo apt-get install jq
-
-   # Windows (via Chocolatey)
-   choco install jq
+   # ShellCheck for script linting
+   brew install shellcheck  # macOS
+   # or
+   apt-get install shellcheck  # Linux
    ```
 
-3. **Configure Gemini API Key**:
+3. **Git** for version control
+
+4. **Basic understanding** of:
+   - Bash scripting
+   - Claude Code plugin architecture
+   - Gemini CLI usage
+
+## Development Setup
+
+1. **Fork and clone** the repository:
+
    ```bash
-   gemini config set apiKey YOUR_GOOGLE_AI_API_KEY
+   git clone https://github.com/YOUR-USERNAME/gemini-search.git
+   cd gemini-search
    ```
 
-### Setting Up Your Development Environment
+2. **Create a feature branch**:
 
-1. **Fork the repository** on GitHub
-
-2. **Clone your fork**:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/gemini-search-plugin.git
-   cd gemini-search-plugin
-   ```
-
-3. **Add upstream remote**:
-   ```bash
-   git remote add upstream https://github.com/ORIGINAL_OWNER/gemini-search-plugin.git
-   ```
-
-4. **Create a feature branch**:
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
-## Development Workflow
+3. **Make your changes** and test thoroughly
 
-### Branch Naming Convention
+4. **Run linting**:
 
-- `feature/` - New features
-- `fix/` - Bug fixes
-- `docs/` - Documentation updates
-- `test/` - Test additions or modifications
-- `refactor/` - Code refactoring
-- `chore/` - Maintenance tasks
-
-Example: `feature/add-cache-expiry-api`
-
-### Making Changes
-
-1. **Keep changes focused** - One feature/fix per PR
-2. **Update documentation** - Update README.md if needed
-3. **Add tests** - Include tests for new functionality
-4. **Follow coding standards** - See [Coding Standards](#coding-standards)
-5. **Update CHANGES.md** - Document your changes
-
-## Testing
-
-### Manual Testing
-
-Test the core functionality:
-
-```bash
-# Test search wrapper
-bash scripts/search-wrapper.sh search "test query"
-
-# Test analytics
-bash scripts/analytics.sh report
-
-# Test content extraction
-bash scripts/extract-content.sh extract "https://example.com" "test query"
-
-# Test error handling
-bash hooks/error-search.sh handle-error "test error" "query" "google"
-```
-
-### Integration Testing
-
-Run the integration test suite:
-
-```bash
-# From the plugin root directory
-bash tests/run-integration-tests.sh
-```
-
-### Regression Testing
-
-Before submitting a PR, ensure:
-
-1. All existing tests pass
-2. Cache functionality works correctly
-3. Analytics tracking is accurate
-4. Error handling behaves as expected
-5. Hooks trigger appropriately
-
-### Test Coverage
-
-Aim for comprehensive coverage:
-
-- ✓ Happy path scenarios
-- ✓ Error conditions
-- ✓ Edge cases
-- ✓ Cache hit/miss scenarios
-- ✓ Retry logic
-- ✓ Content validation
-
-## Submitting Changes
-
-### Before Submitting
-
-1. **Update your branch** with upstream changes:
-   ```bash
-   git fetch upstream
-   git rebase upstream/main
-   ```
-
-2. **Run all tests**:
-   ```bash
-   bash tests/run-integration-tests.sh
-   ```
-
-3. **Check for linting issues**:
-   ```bash
-   # For bash scripts
-   shellcheck scripts/*.sh hooks/*.sh
-   ```
-
-4. **Update documentation**:
-   - Update README.md if adding features
-   - Update CHANGES.md with your changes
-   - Add inline comments for complex logic
-
-### Pull Request Process
-
-1. **Create a descriptive PR title**:
-   - Good: "Add configurable cache TTL via environment variable"
-   - Bad: "Update code"
-
-2. **Fill out the PR template** completely:
-   - Describe the changes
-   - Link related issues
-   - List testing performed
-   - Add screenshots if applicable
-
-3. **Ensure CI passes**:
-   - All automated tests pass
-   - No linting errors
-   - No security vulnerabilities
-
-4. **Request review**:
-   - Tag appropriate reviewers
-   - Be responsive to feedback
-   - Update PR based on review comments
-
-5. **Keep PR updated**:
-   - Rebase on main if needed
-   - Resolve merge conflicts promptly
-
-### PR Requirements
-
-- [ ] Tests pass
-- [ ] Documentation updated
-- [ ] CHANGES.md updated
-- [ ] No merge conflicts
-- [ ] Follows coding standards
-- [ ] Reviewed and approved
-
-## Coding Standards
-
-### Bash Scripts
-
-1. **Use ShellCheck** for linting:
    ```bash
    shellcheck scripts/*.sh
    ```
 
-2. **Error handling**:
-   - Use `set -euo pipefail` at the top of scripts
-   - Check command exit codes
-   - Provide meaningful error messages
+5. **Test your changes**:
 
-3. **Logging**:
-   - Use structured JSON logging
-   - Include timestamp, level, and message
-   - Log to both file and stderr
-
-4. **Function documentation**:
    ```bash
-   # Function: cache_result
-   # Description: Cache search results with TTL
+   bash tests/run-integration-tests.sh
+   ```
+
+## How to Contribute
+
+### Types of Contributions
+
+We welcome several types of contributions:
+
+1. **Bug Fixes** - Fix issues in existing functionality
+2. **Features** - Add new capabilities
+3. **Documentation** - Improve or add documentation
+4. **Tests** - Add or improve test coverage
+5. **Performance** - Optimize existing code
+6. **Refactoring** - Improve code quality without changing behavior
+
+### Contribution Workflow
+
+1. **Check existing issues** - Look for related issues or create a new one
+2. **Discuss your idea** - Comment on the issue to discuss your approach
+3. **Implement your changes** - Write code following our standards
+4. **Test thoroughly** - Ensure all tests pass
+5. **Submit a pull request** - Reference the issue number
+6. **Address feedback** - Work with maintainers to refine your contribution
+
+## Coding Standards
+
+### Bash Script Standards
+
+All bash scripts must:
+
+1. **Use strict error handling**:
+
+   ```bash
+   set -euo pipefail
+   ```
+
+2. **Follow ShellCheck recommendations**:
+   - Separate variable declarations and assignments (SC2155)
+   - Check exit codes directly instead of using `$?` (SC2181)
+   - Use bash parameter expansion instead of `sed` when possible (SC2001)
+   - Quote array expansions properly (SC2206)
+
+3. **Include proper documentation**:
+
+   ```bash
+   # Function: Function name
    # Arguments:
-   #   $1 - cache_key (string)
-   #   $2 - result_data (string)
-   # Returns: 0 on success, 1 on failure
-   cache_result() {
-       # implementation
+   #   $1 - description (type)
+   #   $2 - description (type)
+   # Returns: description
+   function_name() {
+       # Implementation
    }
    ```
 
-5. **Variable naming**:
-   - Use lowercase with underscores: `cache_key`
-   - Constants in uppercase: `MAX_RETRIES`
-   - Descriptive names: `search_query` not `sq`
+4. **Use meaningful variable names**:
 
-### JSON Configuration
-
-1. **Use consistent formatting**:
-   - 2-space indentation
-   - Double quotes for strings
-   - No trailing commas
-
-2. **Validate JSON**:
    ```bash
-   jq empty < file.json
+   # Good
+   local query_string="$1"
+   local cache_file="$CACHE_DIR/$cache_key.json"
+
+   # Bad
+   local q="$1"
+   local f="$DIR/$k.json"
    ```
 
-### Markdown Documentation
+5. **Handle errors gracefully**:
 
-1. **Use proper headings** (H1, H2, H3)
-2. **Include code examples** with syntax highlighting
-3. **Add table of contents** for long documents
-4. **Keep line length** reasonable (80-100 chars)
-
-## Release Process
-
-### Versioning
-
-We follow [Semantic Versioning](https://semver.org/):
-
-- **MAJOR** (1.x.x) - Breaking changes
-- **MINOR** (x.1.x) - New features, backward compatible
-- **PATCH** (x.x.1) - Bug fixes, backward compatible
-
-### Creating a Release
-
-1. **Update version** in:
-   - `.claude-plugin/plugin.json`
-   - `.claude-plugin/marketplace.json`
-   - README.md
-
-2. **Update CHANGES.md**:
-   - Add release date
-   - Summarize changes
-   - Credit contributors
-
-3. **Create release PR**:
    ```bash
-   git checkout -b release/v1.2.1
-   # Make version updates
-   git commit -m "chore: prepare release v1.2.1"
-   git push origin release/v1.2.1
+   if ! result=$(some_command); then
+       log_error "Command failed: some_command"
+       return 1
+   fi
    ```
 
-4. **After PR merge**, create and push tag:
-   ```bash
-   git checkout main
-   git pull upstream main
-   git tag -a v1.2.1 -m "Release v1.2.1"
-   git push upstream v1.2.1
-   ```
+### Code Style
 
-5. **GitHub Actions** will automatically:
-   - Run tests
-   - Create GitHub release
-   - Publish release notes
+- **Indentation**: 4 spaces (no tabs)
+- **Line length**: Maximum 120 characters
+- **Function length**: Keep functions focused and under 50 lines
+- **Comments**: Explain "why" not "what"
+- **Logging**: Use structured JSON logging
 
-## Questions or Issues?
+### Variable Declaration Best Practices
 
-- **Questions**: Open a GitHub Discussion
-- **Bugs**: Open a GitHub Issue
-- **Security**: Email do-tester@proton.me
-- **Chat**: Join our community (link TBD)
+Always split variable declarations and assignments:
 
-## Recognition
+```bash
+# Good
+local timestamp
+timestamp=$(date -Iseconds)
 
-Contributors will be recognized in:
-- CHANGES.md release notes
-- GitHub contributors list
-- README.md acknowledgments (for significant contributions)
+# Bad
+local timestamp=$(date -Iseconds)
+```
 
-Thank you for contributing!
+### Exit Code Checking
+
+Check exit codes directly:
+
+```bash
+# Good
+if content=$(extract_content "$url"); then
+    echo "$content"
+fi
+
+# Bad
+content=$(extract_content "$url")
+if [[ $? -eq 0 ]]; then
+    echo "$content"
+fi
+```
+
+## Testing Guidelines
+
+### Test Requirements
+
+All contributions should include:
+
+1. **Unit tests** for new functions
+2. **Integration tests** for new features
+3. **Manual testing** to verify behavior
+
+### Running Tests
+
+```bash
+# Run all integration tests
+bash tests/run-integration-tests.sh
+
+# Run specific script tests
+bash scripts/search-wrapper.sh search "test query"
+bash scripts/search-wrapper.sh validate-result "title" "url" "snippet" "query"
+
+# Check syntax
+bash -n scripts/*.sh
+
+# Lint scripts
+shellcheck scripts/*.sh
+```
+
+### Test Coverage
+
+Ensure tests cover:
+
+- ✅ Happy path (normal operation)
+- ✅ Error cases (failures, invalid input)
+- ✅ Edge cases (empty input, special characters)
+- ✅ Performance (caching, timeouts)
+
+### Writing Tests
+
+Create test scripts in the `tests/` directory:
+
+```bash
+#!/bin/bash
+# tests/test-feature.sh
+
+set -euo pipefail
+
+echo "Testing feature X..."
+
+# Setup
+EXPECTED="expected result"
+ACTUAL=$(your_function "input")
+
+# Assert
+if [[ "$ACTUAL" == "$EXPECTED" ]]; then
+    echo "✓ Test passed"
+    exit 0
+else
+    echo "✗ Test failed: expected '$EXPECTED', got '$ACTUAL'"
+    exit 1
+fi
+```
+
+## Pull Request Process
+
+### Before Submitting
+
+1. ✅ All tests pass
+2. ✅ ShellCheck shows no errors
+3. ✅ Code follows style guidelines
+4. ✅ Documentation is updated
+5. ✅ CHANGELOG.md is updated
+6. ✅ Commit messages are clear
+
+### PR Checklist
+
+- [ ] Branch is up to date with `main`
+- [ ] All commits are signed off
+- [ ] Tests added/updated
+- [ ] Documentation added/updated
+- [ ] CHANGELOG.md updated
+- [ ] ShellCheck passes
+- [ ] Integration tests pass
+
+### Commit Messages
+
+Follow conventional commits format:
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**Types:**
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting)
+- `refactor`: Code refactoring
+- `test`: Test additions/changes
+- `chore`: Maintenance tasks
+
+**Example:**
+
+```
+feat(search): add support for multi-engine search
+
+Added ability to query multiple search engines simultaneously
+with configurable priority and fallback logic.
+
+Closes #123
+```
+
+### PR Description Template
+
+```markdown
+## Description
+Brief description of changes
+
+## Motivation
+Why is this change needed?
+
+## Changes Made
+- Change 1
+- Change 2
+- Change 3
+
+## Testing
+How was this tested?
+
+## Screenshots (if applicable)
+Include screenshots for UI changes
+
+## Related Issues
+Closes #issue_number
+```
+
+## Issue Reporting
+
+### Bug Reports
+
+When reporting bugs, include:
+
+1. **Environment**:
+   - OS and version
+   - Gemini CLI version
+   - Claude Code version
+   - Plugin version
+
+2. **Steps to reproduce**:
+   - Detailed steps
+   - Expected behavior
+   - Actual behavior
+
+3. **Logs**:
+   - Relevant error messages
+   - Log file contents
+   - Stack traces
+
+**Template:**
+
+```markdown
+### Environment
+- OS: macOS 14.0
+- Gemini CLI: 1.2.3
+- Plugin Version: 0.1.1
+
+### Steps to Reproduce
+1. Run /search "query"
+2. Observe error
+
+### Expected Behavior
+Search should return results
+
+### Actual Behavior
+Error: "Gemini CLI search failed"
+
+### Logs
+```
+
+<error logs here>
+```
+```
+
+### Feature Requests
+
+For feature requests, include:
+
+1. **Use case**: Why is this needed?
+2. **Proposed solution**: How should it work?
+3. **Alternatives**: Other approaches considered
+4. **Benefits**: Who benefits and how?
+
+## Development Tips
+
+### Debugging
+
+Enable debug logging:
+
+```bash
+# In search-wrapper.sh
+log_message "DEBUG" "Variable value: $var"
+
+# View logs
+tail -f /tmp/gemini-search.log
+```
+
+### Local Testing
+
+Test without installing the plugin:
+
+```bash
+# Run scripts directly
+bash scripts/search-wrapper.sh search "test query"
+
+# Test with different environments
+CACHE_TTL=60 bash scripts/search-wrapper.sh search "query"
+```
+
+### Performance Profiling
+
+Check script performance:
+
+```bash
+time bash scripts/search-wrapper.sh search "query"
+```
+
+## Getting Help
+
+- **Issues**: Create a GitHub issue
+- **Discussions**: Use GitHub Discussions
+- **Documentation**: Check README.md and docs/
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the MIT License.
+
+---
+
+Thank you for contributing to the Gemini Search Plugin! 🎉

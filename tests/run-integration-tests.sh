@@ -61,8 +61,9 @@ setup_test_env() {
     mkdir -p "$CACHE_DIR"
     mkdir -p "$ANALYTICS_DIR"
 
-    # Initialize analytics file
-    echo '{"total_searches":0,"cache_hits":0,"cache_misses":0,"search_engines":{},"top_queries":[]}' > "$ANALYTICS_DIR/search-analytics.json"
+    # Create log files
+    touch "$LOG_FILE"
+    touch "$ERROR_LOG_FILE"
 
     echo "Test environment ready"
 }
@@ -95,13 +96,13 @@ test_script_permissions() {
 # Test 3: Analytics initialization
 test_analytics_init() {
     bash scripts/analytics.sh init
-    [ -f "$ANALYTICS_DIR/search-analytics.json" ]
+    [ -f "$ANALYTICS_DIR/search-aggregates.json" ]
 }
 
 # Test 4: Analytics tracking
 test_analytics_tracking() {
     bash scripts/analytics.sh track-search "test" "test query" "google" "100"
-    total=$(jq -r '.total_searches' "$ANALYTICS_DIR/search-analytics.json")
+    total=$(jq -r '.total_searches' "$ANALYTICS_DIR/search-aggregates.json")
     [ "$total" -eq 1 ]
 }
 
@@ -138,7 +139,8 @@ test_analytics_report() {
 # Test 9: Cache clear functionality
 test_cache_clear() {
     bash scripts/search-wrapper.sh clear-cache
-    [ ! -f "$CACHE_DIR"/*.json ] 2>/dev/null || [ -z "$(ls -A $CACHE_DIR 2>/dev/null)" ]
+    # Check if cache directory is empty
+    [ -z "$(ls -A "$CACHE_DIR" 2>/dev/null)" ]
 }
 
 # Test 10: Validate environment variables

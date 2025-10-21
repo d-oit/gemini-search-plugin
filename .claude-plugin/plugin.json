@@ -1,10 +1,12 @@
 {
   "name": "gemini-search",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Advanced web search plugin with caching, analytics, content extraction, and validation",
-  "author": "d.o.",
+  "author": {
+    "name": "d.o."
+  },
   "license": "MIT",
-  "commands": "./commands",
-  "agents": "./agents",
+  "commands": "./commands/*.md",
+  "agents": "./agents/*.md",
   "hooks": "./hooks/hooks.json"
 }

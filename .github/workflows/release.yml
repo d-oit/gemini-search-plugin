@@ -27,7 +27,7 @@ jobs:
 
       - name: Validate version in plugin.json
         run: |
-          PLUGIN_VERSION=$(jq -r '.version' .claude-plugin/plugin.json)
+          PLUGIN_VERSION=$(jq -r '.version' plugin.json)
           TAG_VERSION="${{ steps.tag_version.outputs.VERSION }}"
           if [ "$PLUGIN_VERSION" != "$TAG_VERSION" ]; then
             echo "Version mismatch: plugin.json has $PLUGIN_VERSION but tag is $TAG_VERSION"

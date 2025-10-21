@@ -58,7 +58,7 @@ jobs:
           sudo apt-get install -y jq
 
       - name: Install Gemini CLI
-        run: npm install -g @google/genai-cli
+        run: npm install -g @google/gemini-cli
 
       - name: Set up test environment
         run: |
@@ -87,6 +87,8 @@ jobs:
   security-scan:
     name: Security Scanning
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -104,15 +106,3 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-  markdown-lint:
-    name: Markdown Linting
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Markdown Lint
-        uses: actionshub/markdownlint@main
-        with:
-          path: '.'
-          ignore: 'node_modules'

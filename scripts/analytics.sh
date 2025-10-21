@@ -11,9 +11,10 @@ ERROR_LOG_FILE="${ANALYTICS_DIR}/search-analytics-errors.log"
 log_message() {
     local level="$1"
     local message="$2"
-    local timestamp=$(date -Iseconds)
+    local timestamp
+    timestamp=$(date -Iseconds)
     local log_entry="{\"timestamp\":\"$timestamp\",\"level\":\"$level\",\"message\":\"$message\"}"
-    
+
     echo "$log_entry" >> "$LOG_FILE"
     # Also output to stderr for immediate visibility
     echo "$log_entry" >&2
@@ -22,7 +23,8 @@ log_message() {
 # Error logging function
 log_error() {
     local message="$1"
-    local timestamp=$(date -Iseconds)
+    local timestamp
+    timestamp=$(date -Iseconds)
     local log_entry="{\"timestamp\":\"$timestamp\",\"level\":\"ERROR\",\"message\":\"$message\"}"
     
     echo "$log_entry" >> "$ERROR_LOG_FILE"
@@ -47,8 +49,9 @@ track_search_event() {
     local query="$2"
     local engine="${3:-default}"
     local response_time="${4:-0}"
-    
-    local timestamp=$(date -Iseconds)
+
+    local timestamp
+    timestamp=$(date -Iseconds)
     local event_json="{\"timestamp\":\"$timestamp\",\"event_type\":\"$event_type\",\"query\":\"$query\",\"engine\":\"$engine\",\"response_time_ms\":$response_time}"
     
     if echo "$event_json" >> "$LOG_FILE" 2>/dev/null; then
@@ -85,9 +88,7 @@ increment_counter() {
     fi
     
     local current_value
-    current_value=$(jq -r ".${counter_name}" "$AGGREGATE_FILE" 2>/dev/null)
-    
-    if [[ $? -ne 0 ]] || [[ "$current_value" == "null" ]]; then
+    if ! current_value=$(jq -r ".${counter_name}" "$AGGREGATE_FILE" 2>/dev/null) || [[ "$current_value" == "null" ]]; then
         log_error "Failed to read counter $counter_name from $AGGREGATE_FILE"
         return 1
     fi
@@ -144,18 +145,14 @@ track_engine_usage() {
     
     # Get current engine usage map
     local current_engines
-    current_engines=$(jq -r '.search_engines_used' "$AGGREGATE_FILE" 2>/dev/null)
-    
-    if [[ $? -ne 0 ]] || [[ "$current_engines" == "null" ]]; then
+    if ! current_engines=$(jq -r '.search_engines_used' "$AGGREGATE_FILE" 2>/dev/null) || [[ "$current_engines" == "null" ]]; then
         log_error "Failed to read search engines from $AGGREGATE_FILE"
         return 1
     fi
-    
+
     # Get current count for this engine
     local current_count
-    current_count=$(echo "$current_engines" | jq -r ".${engine} // 0" 2>/dev/null)
-    
-    if [[ $? -ne 0 ]] || [[ "$current_count" == "null" ]]; then
+    if ! current_count=$(echo "$current_engines" | jq -r ".${engine} // 0" 2>/dev/null) || [[ "$current_count" == "null" ]]; then
         current_count=0
     fi
     
@@ -193,25 +190,21 @@ track_top_query() {
     
     # Get current top queries map
     local current_queries
-    current_queries=$(jq -r '.top_queries' "$AGGREGATE_FILE" 2>/dev/null)
-    
-    if [[ $? -ne 0 ]] || [[ "$current_queries" == "null" ]]; then
+    if ! current_queries=$(jq -r '.top_queries' "$AGGREGATE_FILE" 2>/dev/null) || [[ "$current_queries" == "null" ]]; then
         log_error "Failed to read top queries from $AGGREGATE_FILE"
         return 1
     fi
-    
+
     # Get current count for this query
     local current_count
-    current_count=$(echo "$current_queries" | jq -r ".[\"$query\"] // 0" 2>/dev/null)
-    
-    if [[ $? -ne 0 ]] || [[ "$current_count" == "null" ]]; then
+    if ! current_count=$(echo "$current_queries" | jq -r ".[\"$query\"] // 0" 2>/dev/null) || [[ "$current_count" == "null" ]]; then
         current_count=0
     fi
     
     local new_count=$((current_count + 1))
-    
+
     # Update the query count with atomic write
-    if jq --arg query "$query" --argjson count "$new_count" '.top_queries[$arg.query] = $count' "$AGGREGATE_FILE" > "${AGGREGATE_FILE}.tmp" 2>/dev/null; then
+    if jq --arg query "$query" --argjson count "$new_count" '.top_queries[$query] = $count' "$AGGREGATE_FILE" > "${AGGREGATE_FILE}.tmp" 2>/dev/null; then
         if mv "${AGGREGATE_FILE}.tmp" "$AGGREGATE_FILE" 2>/dev/null; then
             log_message "INFO" "Updated query '$query' count to $new_count"
         else
@@ -238,9 +231,7 @@ maintain_top_queries() {
     
     # Extract queries and counts, sort by count, keep top 10
     local top_queries_json
-    top_queries_json=$(jq -r '.top_queries | to_entries | sort_by(.value) | reverse | limit(10; .) | from_entries' "$AGGREGATE_FILE" 2>/dev/null)
-    
-    if [[ $? -ne 0 ]] || [[ "$top_queries_json" == "null" ]]; then
+    if ! top_queries_json=$(jq -r '.top_queries | to_entries | sort_by(.value) | reverse | limit(10; .) | from_entries' "$AGGREGATE_FILE" 2>/dev/null) || [[ "$top_queries_json" == "null" ]]; then
         log_error "Failed to extract and sort top queries from $AGGREGATE_FILE"
         return 1
     fi
@@ -360,6 +351,21 @@ validate_analytics_data() {
 
 # Parse command line arguments
 case "${1:-}" in
+    init)
+        # Initialize analytics files
+        if [[ ! -f "$AGGREGATE_FILE" ]]; then
+            if echo '{"total_searches":0,"cache_hits":0,"cache_misses":0,"search_engines_used":{},"top_queries":{}}' > "$AGGREGATE_FILE" 2>/dev/null; then
+                log_message "INFO" "Initialized aggregate statistics file"
+                echo "Analytics initialized successfully"
+            else
+                log_error "Failed to initialize aggregate statistics file: $AGGREGATE_FILE"
+                exit 1
+            fi
+        else
+            log_message "INFO" "Analytics already initialized"
+            echo "Analytics already initialized"
+        fi
+        ;;
     track-search)
         if track_search_event "${2:-}" "${3:-}" "${4:-}" "${5:-}"; then
             update_aggregates
@@ -400,8 +406,9 @@ case "${1:-}" in
         fi
         ;;
     *)
-        log_message "INFO" "Usage: $0 {track-search|record-cache-event|report|reset|validate} [args...]"
-        echo "Usage: $0 {track-search|record-cache-event|report|reset|validate} [args...]" >&2
+        log_message "INFO" "Usage: $0 {init|track-search|record-cache-event|report|reset|validate} [args...]"
+        echo "Usage: $0 {init|track-search|record-cache-event|report|reset|validate} [args...]" >&2
+        echo "  init"
         echo "  track-search event_type query engine response_time"
         echo "  record-cache-event hit|miss"
         echo "  report"

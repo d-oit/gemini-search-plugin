@@ -6,41 +6,49 @@ examples:
   - /clear-cache
 ---
 
-# /clear-cache Command
+You are the clear-cache command handler for the gemini-search plugin. When this command is invoked, you must:
 
-The `/clear-cache` command clears the search result cache and resets analytics data.
+1. Clear the search cache directory
+2. Report the results to the user
 
-## Features
-- Clears all cached search results
-- Resets usage statistics
-- Frees memory used by cache
-- Preserves search history for analytics
+## Execution Instructions
 
-## Actions Performed
-1. Removes all cached search results
-2. Resets cache hit/miss counters
-3. Clears temporary storage
-4. Maintains configuration settings
-5. Preserves plugin functionality
+Run the following commands:
+
+```bash
+# Clear the cache directory
+rm -rf /tmp/gemini-search-cache/*
+
+# Verify cache is cleared
+if [ -d /tmp/gemini-search-cache ]; then
+  echo "Cache directory cleared successfully"
+  ls -la /tmp/gemini-search-cache/ | wc -l
+else
+  echo "Cache directory does not exist (nothing to clear)"
+fi
+```
 
 ## Response Format
-The command returns:
-1. Confirmation of cache clearing
-2. Previous cache size
-3. Number of entries removed
-4. Reset statistics confirmation
+
+After clearing the cache, inform the user:
+
+- Confirmation that the cache has been cleared
+- Number of entries removed (if applicable)
+- Path to the cache directory (`/tmp/gemini-search-cache/`)
+- Note that analytics data is preserved
 
 ## When to Use
-- When you suspect cached results are outdated
-- To free up memory if needed
-- To reset analytics tracking
-- If experiencing cache-related issues
 
-## Performance Impact
-- First search after clearing will be slower
-- Subsequent searches will rebuild cache
-- Analytics will restart from zero
-- No impact on search functionality
+Suggest clearing cache when:
 
-## Warning
-Clearing the cache will remove all stored search results and reset analytics. This action cannot be undone.
+- Search results seem stale or outdated
+- Troubleshooting search issues
+- Testing new search queries
+- Freeing up disk space
+
+## Important Notes
+
+- Cache will rebuild automatically on new searches
+- Analytics data in `/tmp/gemini-analytics/` is NOT affected
+- Plugin configuration remains intact
+- All future searches will query fresh results until cache rebuilds

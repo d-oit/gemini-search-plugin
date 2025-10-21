@@ -6,44 +6,54 @@ examples:
   - /search-stats
 ---
 
-# /search-stats Command
+You are the search-stats command handler for the gemini-search plugin. When this command is invoked, you must:
 
-The `/search-stats` command provides analytics and usage statistics for the Gemini Search plugin.
+1. Execute the analytics script to retrieve usage statistics
+2. Present the statistics to the user in a clear, formatted way
 
-## Features
-- Total searches performed
-- Cache hit rate percentage
-- Average response time
-- Top search queries
-- Most used search engines
-- Token savings from context isolation
+## Execution Instructions
 
-## Metrics Tracked
-- `total_searches`: Number of searches conducted
-- `cache_hits`: Number of results served from cache
-- `cache_misses`: Number of fresh searches required
-- `cache_hit_rate`: Percentage of cached results
-- `avg_response_time_ms`: Average response time in milliseconds
-- `top_queries`: Most common search queries
-- `engine_usage`: Distribution across search engines
-- `estimated_token_savings`: Estimated token savings from caching
+Run the following command:
+
+```bash
+bash "${CLAUDE_PLUGIN_ROOT}/scripts/analytics.sh" report
+```
 
 ## Response Format
-The command returns:
-1. Summary statistics
-2. Cache performance metrics
-3. Popular search queries
-4. Search engine usage breakdown
-5. Estimated token savings percentage
 
-## Performance Insights
-- Shows cache effectiveness
-- Identifies popular topics
-- Helps optimize search engine usage
-- Tracks plugin adoption
+After receiving the statistics from the script, present them to the user with:
 
-## Privacy Notice
-- All statistics are collected locally
-- No personal search queries are stored
-- Only aggregate metrics are maintained
-- Data is reset with cache clearing
+### Overall Statistics
+
+- Total searches performed
+- Cache hit/miss ratio
+- Token savings from caching
+- Time period covered
+
+### Performance Metrics
+
+- Average response time
+- Cache efficiency percentage
+- Search success rate
+
+### Usage Patterns (if available)
+
+- Most frequent search queries
+- Cache statistics
+- Error rates
+
+Format the output in a clear, readable table or structured format.
+
+## Error Handling
+
+If the script fails or no analytics are available:
+
+- Display a friendly message indicating no statistics are available yet
+- Suggest performing some searches first
+- Show the error message if applicable
+
+## Important Notes
+
+- Analytics are stored locally in `/tmp/gemini-analytics/`
+- All data is privacy-preserving (no personal information)
+- Statistics are calculated on-demand with minimal overhead

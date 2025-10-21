@@ -19,7 +19,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 log_message() {
     local level="$1"
     local message="$2"
-    local timestamp=$(date -Iseconds)
+    local timestamp
+    timestamp=$(date -Iseconds)
     local log_entry="{\"timestamp\":\"$timestamp\",\"level\":\"$level\",\"message\":\"$message\"}"
     
     echo "$log_entry" >> "$LOG_FILE"
@@ -30,7 +31,8 @@ log_message() {
 # Error logging function
 log_error() {
     local message="$1"
-    local timestamp=$(date -Iseconds)
+    local timestamp
+    timestamp=$(date -Iseconds)
     local log_entry="{\"timestamp\":\"$timestamp\",\"level\":\"ERROR\",\"message\":\"$message\"}"
     
     echo "$log_entry" >> "$ERROR_LOG_FILE"
@@ -53,21 +55,23 @@ is_cache_valid() {
     
     if [[ -f "$cache_file" ]]; then
         # Use a platform-independent way to get modification time
+        local cache_time
         if command -v stat >/dev/null 2>&1; then
             # Unix-like systems
-            local cache_time=$(stat -c %Y "$cache_file" 2>/dev/null || stat -f %m "$cache_file" 2>/dev/null || echo 0)
+            cache_time=$(stat -c %Y "$cache_file" 2>/dev/null || stat -f %m "$cache_file" 2>/dev/null || echo 0)
         else
             # Fallback: just check if file exists and is not empty
-            local cache_time=$(date +%s)
+            cache_time=$(date +%s)
         fi
-        
+
         if [[ $cache_time -eq 0 ]]; then
             # stat command failed, just check file exists
             [[ -s "$cache_file" ]]  # non-zero size
             return $?
         fi
-        
-        local current_time=$(date +%s)
+
+        local current_time
+        current_time=$(date +%s)
         local age=$((current_time - cache_time))
         
         [[ $age -lt $ttl ]]
@@ -86,7 +90,7 @@ extract_content_from_url() {
     # Check if Gemini CLI is available
     if ! command -v gemini >/dev/null 2>&1; then
         log_error "Gemini CLI not found. Please install Gemini CLI to use this plugin."
-        echo "Error: Gemini CLI is required. Install from: npm install -g @google/genai-cli"
+        echo "Error: Gemini CLI is required. Install from: npm install -g @google/gemini-cli"
         return 1
     fi
 
@@ -97,7 +101,7 @@ extract_content_from_url() {
     local prompt="Extract and summarize the main content from this webpage: $url. Provide only the key information without additional commentary."
 
     # Execute Gemini CLI in headless mode with --yolo for auto-approval
-    if content=$(gemini -p "$prompt" --yolo 2>/dev/null); then
+    if content=$(gemini -p "/tool:googleSearch query:\"$prompt\" raw:true" --yolo --output-format json -m "gemini-2.5-flash" 2>/dev/null); then
         if [[ -n "$content" ]]; then
             echo "$content"
             log_message "INFO" "Successfully extracted content from $url using Gemini grounded web server"
@@ -116,22 +120,27 @@ validate_search_result() {
     local url="$2"
     local snippet="$3"
     local query="$4"
-    
+
     # Convert to lowercase for comparison
-    local lower_title=$(echo "$title" | tr '[:upper:]' '[:lower:]')
-    local lower_url=$(echo "$url" | tr '[:upper:]' '[:lower:]')
-    local lower_snippet=$(echo "$snippet" | tr '[:upper:]' '[:lower:]')
-    local lower_query=$(echo "$query" | tr '[:upper:]' '[:lower:]')
-    
+    local lower_title
+    lower_title=$(echo "$title" | tr '[:upper:]' '[:lower:]')
+    local lower_url
+    lower_url=$(echo "$url" | tr '[:upper:]' '[:lower:]')
+    local lower_snippet
+    lower_snippet=$(echo "$snippet" | tr '[:upper:]' '[:lower:]')
+    local lower_query
+    lower_query=$(echo "$query" | tr '[:upper:]' '[:lower:]')
+
     log_message "DEBUG" "Validating result: $title against query: $query"
-    
+
     # Check if query terms appear in the result
     local relevance_score=0
-    local query_terms=($lower_query)
-    
+    local -a query_terms
+    read -ra query_terms <<< "$lower_query"
+
     for term in "${query_terms[@]}"; do
         if [[ "$lower_title" == *"$term"* ]] || [[ "$lower_snippet" == *"$term"* ]] || [[ "$lower_url" == *"$term"* ]]; then
-            ((relevance_score++))
+            ((relevance_score++)) || true
         fi
     done
     
@@ -189,7 +198,7 @@ perform_search() {
     # Check if Gemini CLI is available
     if ! command -v gemini >/dev/null 2>&1; then
         log_error "Gemini CLI not found. Please install Gemini CLI to use this plugin."
-        echo "Error: Gemini CLI is required. Install from: npm install -g @google/genai-cli"
+        echo "Error: Gemini CLI is required. Install from: npm install -g @google/gemini-cli"
         return 1
     fi
 
@@ -200,7 +209,7 @@ perform_search() {
         # The --yolo flag auto-approves the google_web_search tool usage
         # The settings.json file restricts the CLI to only use google_web_search
         local result
-        if result=$(gemini -p "$query" --yolo --output-format json 2>/dev/null); then
+        if result=$(gemini -p "/tool:googleSearch query:\"$query\" raw:true" --yolo --output-format json -m "gemini-2.5-flash" 2>/dev/null); then
             if [[ -n "$result" ]]; then
                 log_message "INFO" "Gemini search successful on attempt $attempt"
                 echo "$result"
@@ -226,15 +235,16 @@ perform_search() {
 # Main search function with error handling and validation
 search() {
     local query="$1"
-    
+
     # Validate input
     if [[ -z "$query" ]]; then
         log_error "Empty query provided"
         echo "Error: Query cannot be empty" >&2
         return 1
     fi
-    
-    local cache_key=$(generate_cache_key "$query")
+
+    local cache_key
+    cache_key=$(generate_cache_key "$query")
     local cache_file="$CACHE_DIR/$cache_key.json"
     
     # Check if result is cached
@@ -272,18 +282,19 @@ get_stats() {
         local cache_hits=0
         local cache_misses=0
         local cache_hit_rate=0
-        
-        # Count total searches from log
-        total_searches=$(grep -c "search" "$LOG_FILE" 2>/dev/null || echo 0)
-        
+
+        # Count total searches from log (grep -c returns 0 on no match)
+        total_searches=$(grep -c "search" "$LOG_FILE" 2>/dev/null) || total_searches=0
+
         # Count cache hits and misses if analytics log has this data
-        cache_hits=$(grep -c "cache_hit" "$LOG_FILE" 2>/dev/null || echo 0)
+        cache_hits=$(grep -c "cache_hit" "$LOG_FILE" 2>/dev/null) || cache_hits=0
         cache_misses=$((total_searches - cache_hits))
         
         if [[ $total_searches -gt 0 ]]; then
             cache_hit_rate=$((cache_hits * 100 / total_searches))
         fi
-        
+
+        echo "=== Cache Statistics ==="
         echo "Total searches: $total_searches"
         echo "Cache hits: $cache_hits"
         echo "Cache misses: $cache_misses"
@@ -310,7 +321,7 @@ clear_cache() {
         fi
         
         # Clear the cache directory
-        if rm -rf "$CACHE_DIR"/* 2>/dev/null; then
+        if rm -rf "${CACHE_DIR:?}"/* 2>/dev/null; then
             log_message "INFO" "Cache cleared. Previous size: $cache_size"
             echo "Cache cleared. Previous size: $cache_size"
         else

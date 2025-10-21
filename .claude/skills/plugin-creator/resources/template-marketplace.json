@@ -1,0 +1,52 @@
+{
+  "name": "my-plugin-marketplace",
+  "owner": {
+    "name": "Your Name",
+    "email": "your.email@example.com"
+  },
+  "plugins": [
+    {
+      "name": "my-plugin",
+      "source": {
+        "type": "github",
+        "repo": "username/repo-name"
+      },
+      "description": "Detailed description for the marketplace listing",
+      "version": "0.1.0",
+      "author": {
+        "name": "Your Name"
+      },
+      "license": "MIT",
+      "homepage": "https://github.com/username/repo-name",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/username/repo-name.git"
+      },
+      "keywords": [
+        "keyword1",
+        "keyword2",
+        "keyword3"
+      ],
+      "category": "productivity",
+      "commands": "./commands",
+      "agents": "./agents",
+      "hooks": "./hooks/hooks.json",
+      "strict": true,
+      "features": [
+        "Feature 1 description",
+        "Feature 2 description",
+        "Feature 3 description"
+      ],
+      "requirements": {
+        "dependencies": [
+          {
+            "name": "dependency-name",
+            "description": "What this dependency does",
+            "install": "installation command here",
+            "required": true
+          }
+        ]
+      }
+    }
+  ]
+}

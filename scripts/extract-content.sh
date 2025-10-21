@@ -16,7 +16,8 @@ mkdir -p "$TEMP_DIR"
 log_message() {
     local level="$1"
     local message="$2"
-    local timestamp=$(date -Iseconds)
+    local timestamp
+    timestamp=$(date -Iseconds)
     local log_entry="{\"timestamp\":\"$timestamp\",\"level\":\"$level\",\"message\":\"$message\"}"
     
     echo "$log_entry" >> "$LOG_FILE"
@@ -27,7 +28,8 @@ log_message() {
 log_error() {
     local message="$1"
     local url="${2:-}"
-    local timestamp=$(date -Iseconds)
+    local timestamp
+    timestamp=$(date -Iseconds)
     local log_entry="{\"timestamp\":\"$timestamp\",\"level\":\"ERROR\",\"message\":\"$message\",\"url\":\"$url\"}"
     
     echo "$log_entry" >> "$ERROR_LOG_FILE"
@@ -62,7 +64,7 @@ extract_text_content() {
     # Check if Gemini CLI is available
     if ! command -v gemini >/dev/null 2>&1; then
         log_error "Gemini CLI not found. Please install Gemini CLI to use this plugin." "$url"
-        echo "Error: Gemini CLI is required. Install from: npm install -g @google/genai-cli"
+        echo "Error: Gemini CLI is required. Install from: npm install -g @google/gemini-cli"
         return 1
     fi
 
@@ -79,7 +81,7 @@ extract_text_content() {
 
     # Execute Gemini CLI in headless mode with --yolo for auto-approval
     local content
-    if content=$(gemini -p "$prompt" --yolo 2>/dev/null); then
+    if content=$(gemini -p "/tool:googleSearch query:\"$prompt\" raw:true" --yolo --output-format json -m "gemini-2.5-flash" 2>/dev/null); then
         if [[ -n "$content" ]]; then
             echo "$content"
             log_message "INFO" "Successfully extracted content from $url using Gemini grounded web server"
@@ -97,14 +99,18 @@ validate_content_relevance() {
     local content="$1"
     local query="$2"
     local url="$3"
-    
+
     # Convert to lowercase for matching
-    local lower_content=$(echo "$content" | tr '[:upper:]' '[:lower:]')
-    local lower_query=$(echo "$query" | tr '[:upper:]' '[:lower:]')
-    local lower_url=$(echo "$url" | tr '[:upper:]' '[:lower:]')
-    
+    local lower_content
+    lower_content=$(echo "$content" | tr '[:upper:]' '[:lower:]')
+    local lower_query
+    lower_query=$(echo "$query" | tr '[:upper:]' '[:lower:]')
+    local lower_url
+    lower_url=$(echo "$url" | tr '[:upper:]' '[:lower:]')
+
     # Extract query terms
-    local query_terms=($lower_query)
+    local -a query_terms
+    read -ra query_terms <<< "$lower_query"
     local total_terms=${#query_terms[@]}
     
     if [[ $total_terms -eq 0 ]]; then
@@ -169,8 +175,10 @@ extract_content_from_url() {
     # Validate the extracted content for relevance
     local validation_result
     validation_result=$(validate_content_relevance "$extracted_content" "$query" "$url")
-    local validation_status=$(echo "$validation_result" | cut -d'|' -f1)
-    local relevance_score=$(echo "$validation_result" | cut -d'|' -f2)
+    local validation_status
+    validation_status=$(echo "$validation_result" | cut -d'|' -f1)
+    local relevance_score
+    relevance_score=$(echo "$validation_result" | cut -d'|' -f2)
     
     if [[ "$validation_status" == "VALID" ]]; then
         log_message "INFO" "Successfully extracted relevant content from $url using Gemini grounded web server (relevance: $relevance_score%)"
@@ -188,9 +196,9 @@ extract_content_from_url() {
 # Function to sanitize URL (remove fragments, normalize)
 sanitize_url() {
     local url="$1"
-    
+
     # Remove fragment identifiers (part after #)
-    url=$(echo "$url" | sed 's/#.*$//')
+    url="${url%%#*}"
     
     # Remove query parameters if needed (uncomment next line if needed)
     # url=$(echo "$url" | sed 's/\?.*$//')
@@ -214,9 +222,7 @@ process_urls() {
         log_message "INFO" "Processing URL: $sanitized_url"
         
         local content
-        content=$(extract_content_from_url "$sanitized_url" "$query")
-        
-        if [[ $? -eq 0 ]]; then
+        if content=$(extract_content_from_url "$sanitized_url" "$query"); then
             # Append URL to content to track source
             results+=("$sanitized_url\n$content\n---\n")
             ((valid_count++))
@@ -249,7 +255,7 @@ case "${1:-}" in
             log_error "Usage: $0 process-urls query url1 [url2 ... urlN]"
             exit 1
         fi
-        local query="$2"
+        query="$2"
         shift 2
         process_urls "$query" "$@"
         ;;

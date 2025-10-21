@@ -77,7 +77,8 @@ validate_url_format() {
 # Returns: 0 if not blacklisted, 1 if blacklisted
 check_url_blacklist() {
     local url="$1"
-    local lower_url=$(echo "$url" | tr '[:upper:]' '[:lower:]')
+    local lower_url
+    lower_url=$(echo "$url" | tr '[:upper:]' '[:lower:]')
 
     # Blacklisted domains
     local blacklist=(
@@ -115,13 +116,18 @@ calculate_relevance_score() {
     local url="$4"
 
     # Convert to lowercase
-    local lower_query=$(echo "$query" | tr '[:upper:]' '[:lower:]')
-    local lower_title=$(echo "$title" | tr '[:upper:]' '[:lower:]')
-    local lower_snippet=$(echo "$snippet" | tr '[:upper:]' '[:lower:]')
-    local lower_url=$(echo "$url" | tr '[:upper:]' '[:lower:]')
+    local lower_query
+    lower_query=$(echo "$query" | tr '[:upper:]' '[:lower:]')
+    local lower_title
+    lower_title=$(echo "$title" | tr '[:upper:]' '[:lower:]')
+    local lower_snippet
+    lower_snippet=$(echo "$snippet" | tr '[:upper:]' '[:lower:]')
+    local lower_url
+    lower_url=$(echo "$url" | tr '[:upper:]' '[:lower:]')
 
     # Split query into terms
-    local query_terms=($lower_query)
+    local -a query_terms
+    read -ra query_terms <<< "$lower_query"
     local total_terms=${#query_terms[@]}
     local matched_terms=0
 

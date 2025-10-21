@@ -21,9 +21,9 @@ fi
 echo "Preparing release v$VERSION..."
 
 # Update plugin.json
-echo "Updating .claude-plugin/plugin.json..."
-jq ".version = \"$VERSION\"" .claude-plugin/plugin.json > .claude-plugin/plugin.json.tmp
-mv .claude-plugin/plugin.json.tmp .claude-plugin/plugin.json
+echo "Updating plugin.json..."
+jq ".version = \"$VERSION\"" plugin.json > plugin.json.tmp
+mv plugin.json.tmp plugin.json
 
 # Update marketplace.json
 echo "Updating .claude-plugin/marketplace.json..."
@@ -44,7 +44,7 @@ fi
 
 echo ""
 echo "✓ Version updated to $VERSION in:"
-echo "  - .claude-plugin/plugin.json"
+echo "  - plugin.json"
 echo "  - .claude-plugin/marketplace.json"
 echo "  - CHANGES.md (if applicable)"
 echo ""

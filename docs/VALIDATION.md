@@ -9,11 +9,13 @@ The Gemini Search Plugin includes comprehensive validation to ensure search resu
 **Purpose**: Filter out irrelevant search results
 
 **How it works**:
+
 - Calculates relevance score by matching query terms against result title, snippet, and URL
 - Minimum relevance threshold: 50%
 - Returns results with relevance scores
 
 **Example**:
+
 ```bash
 Query: "Claude Code plugins"
 Result: "Plugin Development Guide - Claude Code Documentation"
@@ -26,6 +28,7 @@ Status: VALID
 **Purpose**: Verify URLs exist and are accessible
 
 **How it works**:
+
 - Sends HTTP HEAD request to check URL accessibility
 - Validates HTTP status codes (200-399 = valid)
 - Supports redirects (max 5 by default)
@@ -33,11 +36,13 @@ Status: VALID
 - Falls back gracefully if no HTTP client available
 
 **Tools used** (in order of preference):
+
 1. `curl` (primary)
 2. `wget` (fallback)
 3. Skip validation (if neither available)
 
 **Example**:
+
 ```bash
 URL: https://docs.claude.com/plugins
 Status: HTTP 200
@@ -49,11 +54,13 @@ Result: accessible ✓
 **Purpose**: Ensure URLs have valid structure
 
 **Checks**:
+
 - Protocol: Must be `http://` or `https://`
 - Domain: Valid domain name format
 - Path: Optional, any valid path
 
 **Examples**:
+
 ```bash
 ✓ https://docs.claude.com/plugins
 ✓ http://example.org/page
@@ -66,6 +73,7 @@ Result: accessible ✓
 **Purpose**: Filter out test and invalid domains
 
 **Blacklisted domains**:
+
 - `example.com`
 - `test.com`
 - `invalid.com`
@@ -76,6 +84,7 @@ Result: accessible ✓
 - `*.local`
 
 **Example**:
+
 ```bash
 URL: https://example.com/test
 Status: INVALID (blacklisted domain)
@@ -131,11 +140,13 @@ Format: `STATUS|RELEVANCE_SCORE|URL_STATUS`
 ### With Link Validation Enabled
 
 **Pros**:
+
 - ✅ Filters out broken links
 - ✅ Higher quality results
 - ✅ Better user experience
 
 **Cons**:
+
 - ⏱️ Slower (adds ~1-2s per result)
 - 🌐 Requires network access
 - 💾 Not cached
@@ -145,11 +156,13 @@ Format: `STATUS|RELEVANCE_SCORE|URL_STATUS`
 ### With Link Validation Disabled
 
 **Pros**:
+
 - ⚡ Faster results
 - 📡 Works offline
 - 💨 Lower latency
 
 **Cons**:
+
 - ❌ May return broken links
 - ⚠️ Lower quality assurance
 
@@ -201,6 +214,7 @@ bash scripts/validate-links.sh \
 ```
 
 Output:
+
 ```json
 {
   "valid": true,
@@ -233,6 +247,7 @@ tail -f /tmp/gemini-search-debug.log | grep "Validating\|accessible"
 **Cause**: Link validation timing out
 
 **Solution**:
+
 ```bash
 # Increase timeout
 export TIMEOUT_SECONDS=30
@@ -246,6 +261,7 @@ export ENABLE_LINK_VALIDATION=false
 **Cause**: HTTP requests taking too long
 
 **Solution**:
+
 ```bash
 # Reduce timeout
 export TIMEOUT_SECONDS=5
@@ -259,6 +275,7 @@ export MAX_REDIRECTS=2
 **Cause**: Neither curl nor wget installed
 
 **Solution**:
+
 ```bash
 # Install curl (Ubuntu/Debian)
 sudo apt-get install curl
@@ -279,6 +296,7 @@ View validation performance:
 ```
 
 Shows:
+
 - Total searches
 - Cache hit rate
 - Average relevance scores (future feature)

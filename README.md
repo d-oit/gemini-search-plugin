@@ -12,7 +12,7 @@ The plugin restricts the Gemini CLI to only use the `google_web_search` tool thr
 
 ## Features
 
-### 💎 Key Features:
+### 💎 Key Features
 
 - **Gemini CLI Headless Mode** - Uses `gemini -p` with `--yolo` flag for automated web search
 - **Tool Restriction** - `.gemini/settings.json` limits Gemini to only `google_web_search` tool
@@ -108,7 +108,9 @@ Clear the search result cache and reset analytics data.
 1. **Install Gemini CLI**:
 
    ```bash
-   npm install -g @google/genai-cli
+
+ npm install -g @google/gemini-cli
+
    ```
 
 2. **Verify Installation**:
@@ -118,6 +120,7 @@ Clear the search result cache and reset analytics data.
    ```
 
 3. **Configure API Key** (optional):
+
    ```bash
    gemini config set apiKey YOUR_GOOGLE_AI_API_KEY
    ```
@@ -153,6 +156,23 @@ The plugin can be configured through environment variables:
 - Error handling with exponential backoff ensures reliability
 - Content extraction is optimized to focus on relevant information
 - Relevance validation prevents false positive results
+
+**Performance Metrics:**
+
+- Cached searches: <1 second (97% faster)
+- First searches: 8-20 seconds
+- Cache hit rate: 60-85% (typical usage)
+- Memory usage: <50MB
+- Token savings: 39% via context isolation
+
+For detailed benchmarks and optimization strategies, see [docs/PERFORMANCE.md](docs/PERFORMANCE.md)
+
+**Examples:**
+
+- Basic usage examples: [examples/01-basic-searches.md](examples/01-basic-searches.md)
+- Technical queries: [examples/02-technical-queries.md](examples/02-technical-queries.md)
+- Validation examples: [examples/03-validation-examples.md](examples/03-validation-examples.md)
+- Advanced usage: [examples/04-advanced-usage.md](examples/04-advanced-usage.md)
 
 ## Troubleshooting
 
