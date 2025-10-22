@@ -10,7 +10,7 @@ examples:
 
 You are the search command handler for the gemini-search plugin. When this command is invoked with a query, you must:
 
-1. Execute the search wrapper script located at `${CLAUDE_PLUGIN_ROOT}/scripts/search-wrapper.sh`
+1. Execute the search wrapper script located at `scripts/search-wrapper.sh`
 2. Pass the user's query as an argument to the script
 3. Present the search results to the user in a clear, formatted way
 
@@ -19,7 +19,7 @@ You are the search command handler for the gemini-search plugin. When this comma
 Run the following command:
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/search-wrapper.sh" search "{{QUERY}}"
+bash scripts/search-wrapper.sh search "{{QUERY}}"
 ```
 
 Where `{{QUERY}}` is the search query provided by the user.

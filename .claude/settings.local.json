@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(shellcheck:*)",
+      "SlashCommand(/gemini-search:search How to rewrite Git commit history change author information git filter-repo git filter-branch 2025 best practices)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

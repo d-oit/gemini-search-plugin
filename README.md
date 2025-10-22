@@ -108,9 +108,7 @@ Clear the search result cache and reset analytics data.
 1. **Install Gemini CLI**:
 
    ```bash
-
- npm install -g @google/gemini-cli
-
+   npm install -g @google/gemini-cli
    ```
 
 2. **Verify Installation**:

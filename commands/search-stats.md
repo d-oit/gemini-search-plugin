@@ -16,7 +16,7 @@ You are the search-stats command handler for the gemini-search plugin. When this
 Run the following command:
 
 ```bash
-bash "${CLAUDE_PLUGIN_ROOT}/scripts/analytics.sh" report
+bash scripts/analytics.sh report
 ```
 
 ## Response Format
