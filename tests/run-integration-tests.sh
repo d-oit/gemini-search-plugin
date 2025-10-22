@@ -110,7 +110,8 @@ test_analytics_tracking() {
 test_cache_operations() {
     local test_query="test cache query"
     local test_result="test cache result"
-    local cache_key=$(echo "$test_query" | md5sum | cut -d' ' -f1)
+    local cache_key
+    cache_key=$(echo "$test_query" | md5sum | cut -d' ' -f1)
     local cache_file="$CACHE_DIR/${cache_key}.json"
 
     # Create cache entry

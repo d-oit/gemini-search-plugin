@@ -12,31 +12,32 @@ detect_error_type() {
     local error_output="$1"
     
     # Convert to lowercase for pattern matching
-    local lower_error=$(echo "$error_output" | tr '[:upper:]' '[:lower:]')
+    local lower_error
+    lower_error=$(echo "$error_output" | tr '[:upper:]' '[:lower:]')
     
     case "$lower_error" in
-        *"timeout"*|*"timed out"*|*"request timeout"*|*"connection timeout"*)
+        *"timed out"*|*"request timeout"*|*"connection timeout"*|*"timeout"*)
             echo "timeout"
             ;;
-        *"404"*|*"not found"*|*"404 error"*|*"page not found"*)
+        *"page not found"*|*"404 error"*|*"404"*|*"not found"*)
             echo "not_found"
             ;;
-        *"500"*|*"502"*|*"503"*|*"504"*|*"server error"*|*"internal server error"*|*"bad gateway"*|*"service unavailable"*)
+        *"internal server error"*|*"bad gateway"*|*"service unavailable"*|*"500"*|*"502"*|*"503"*|*"504"*|*"server error"*)
             echo "server_error"
             ;;
-        *"rate limit"*|*"too many requests"*|*"429"*|*"request limit"*|*"api limit"*)
+        *"too many requests"*|*"rate limit"*|*"429"*|*"request limit"*|*"api limit"*)
             echo "rate_limit"
             ;;
-        *"network error"*|*"connection refused"*|*"host unreachable"*|*"dns error"*|*"could not resolve"*)
+        *"connection refused"*|*"host unreachable"*|*"dns error"*|*"could not resolve"*|*"network error"*)
             echo "network_error"
             ;;
-        *"ssl"*|*"certificate"*|*"tls"*|*"security"*|*"handshake failed"*)
+        *"certificate"*|*"tls"*|*"handshake failed"*|*"ssl"*|*"security"*)
             echo "security_error"
             ;;
-        *"forbidden"*|*"403"*|*"access denied"*|*"unauthorized"*|*"401"*)
+        *"access denied"*|*"unauthorized"*|*"403"*|*"401"*|*"forbidden"*)
             echo "access_error"
             ;;
-        *"no results"*|*"empty response"*|*"no content"*)
+        *"empty response"*|*"no content"*|*"no results"*)
             echo "no_content"
             ;;
         *)
@@ -53,12 +54,15 @@ validate_search_results() {
     local min_relevance_score="${4:-50}"  # Minimum score to consider valid
     
     # Convert to lowercase for comparison
-    local lower_results=$(echo "$results" | tr '[:upper:]' '[:lower:]')
-    local lower_query=$(echo "$query" | tr '[:upper:]' '[:lower:]')
+    local lower_results
+    lower_results=$(echo "$results" | tr '[:upper:]' '[:lower:]')
+    local lower_query
+    lower_query=$(echo "$query" | tr '[:upper:]' '[:lower:]')
     
     # Split query into terms
     local relevance_score=0
-    local query_terms=($lower_query)
+    local query_terms
+    IFS=' ' read -ra query_terms <<< "$lower_query"
     local total_terms=${#query_terms[@]}
     
     if [[ $total_terms -eq 0 ]]; then
@@ -172,8 +176,10 @@ main() {
     if [[ -n "$input_data" && -n "$search_query" ]]; then
         local validation_result
         validation_result=$(validate_search_results "$input_data" "$search_query" "search" 40)
-        local validation_status=$(echo "$validation_result" | cut -d'|' -f1)
-        local relevance_score=$(echo "$validation_result" | cut -d'|' -f2)
+        local validation_status
+        validation_status=$(echo "$validation_result" | cut -d'|' -f1)
+        local relevance_score
+        relevance_score=$(echo "$validation_result" | cut -d'|' -f2)
         
         if [[ "$validation_status" == "INVALID" ]]; then
             echo "# Gemini Search: Warning - Results may be irrelevant to query '$search_query' (relevance: $relevance_score%)"
@@ -181,7 +187,8 @@ main() {
         fi
     elif [[ -n "$input_data" ]]; then
         # This might be an error message, try to detect and handle it
-        local error_type=$(detect_error_type "$input_data")
+        local error_type
+        error_type=$(detect_error_type "$input_data")
         if [[ "$error_type" != "unknown" ]]; then
             handle_error "$error_type" "$search_query"
         fi

@@ -5,6 +5,41 @@ All notable changes to the Gemini Search Plugin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2025-10-21
+
+### Added
+
+- **Skills System**: Four comprehensive Claude Code skills for plugin development workflow
+  - `plugin-creator`: Complete guide for creating Claude Code plugins with structure, commands, agents, hooks
+  - `shell-script-quality`: ShellCheck and BATS testing framework integration and best practices
+  - `github-repo-management`: GitHub repository management including issues, PRs, releases, and CI/CD
+  - `web-research`: Token-efficient web research using gemini-search agent (30-40% token savings)
+- Skills documentation with README.md files for each skill
+- Main `.claude/skills/README.md` with comprehensive overview and integration guide
+- Cross-references between skills for integrated workflow
+
+### Fixed
+
+- Fixed ShellCheck warnings in `hooks/error-search.sh` (SC2221/SC2222 pattern matching)
+- Fixed ShellCheck info in `scripts/search-wrapper.sh` (SC1091 with proper directive)
+- Fixed ShellCheck warning in `tests/run-integration-tests.sh` (SC2155 declare and assign separately)
+- Fixed ShellCheck info in `tests/test-link-validation.sh` (SC1091 with proper directive)
+
+### Improved
+
+- All shell scripts now pass ShellCheck validation without warnings
+- Enhanced code quality with proper shellcheck directives
+- Better test script quality assurance
+- Comprehensive skills-based workflow for plugin development
+
+### Documentation
+
+- Added skill-specific README files for quick reference
+- Updated plugin-creator skill with related skills references
+- Complete web-research skill documentation with usage patterns and examples
+- GitHub repository management skill with CI/CD workflow examples
+- Shell script quality skill with complete testing and linting guide
+
 ## [0.1.1] - 2025-10-21
 
 ### Changed
@@ -99,6 +134,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History
 
+- **0.1.2** - Skills system for plugin development, code quality improvements
 - **0.1.1** - Gemini CLI format update and ShellCheck improvements
 - **0.1.0** - Initial release with core functionality
 

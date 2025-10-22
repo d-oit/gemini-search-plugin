@@ -167,6 +167,7 @@ validate_search_result() {
         log_message "DEBUG" "Performing static link validation for: $url"
 
         # Source validation functions
+        # shellcheck disable=SC1091
         source "$SCRIPT_DIR/validate-links.sh"
 
         # Check if URL exists

@@ -16,6 +16,7 @@ TESTS_FAILED=0
 
 # Source the validation script
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../scripts" && pwd)"
+# shellcheck disable=SC1091
 source "$SCRIPT_DIR/validate-links.sh"
 
 # Function to run a test

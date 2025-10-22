@@ -643,16 +643,73 @@ Check cache first, execute on miss, store result, track analytics.
 - **Example Plugins**: https://github.com/anthropics/skills
 - **Community**: https://github.com/hesreallyhim/awesome-claude-code
 
+## Related Skills
+
+This plugin-creator skill works together with other skills for a complete development workflow:
+
+### web-research Skill
+Use the **web-research** skill to efficiently research plugin development topics:
+- Latest Claude Code plugin best practices
+- Example plugins and their implementations
+- Marketplace requirements and guidelines
+- Tool comparisons for plugin dependencies
+
+The web-research skill uses the gemini-search agent for token-efficient searches with caching.
+
+### github-repo-management Skill
+Use the **github-repo-management** skill for repository setup and CI/CD:
+- Setting up GitHub Actions workflows for plugins
+- Configuring issue templates and labels
+- Release automation with semantic versioning
+- Pull request workflows and branch protection
+- GitHub Packages publishing
+
+### shell-script-quality Skill
+Use the **shell-script-quality** skill for script quality assurance:
+- ShellCheck linting for plugin scripts
+- BATS testing framework setup
+- CI/CD integration for shell script testing
+- Pre-commit hooks for quality checks
+
 ## Next Steps After Creating Plugin
 
-1. Initialize git repository
-2. Create comprehensive tests
-3. Add CI/CD with GitHub Actions
-4. Write user documentation
-5. Test locally before publishing
-6. Publish to marketplace
-7. Gather user feedback
-8. Iterate and improve
+1. **Initialize git repository**
+   - Use the github-repo-management skill for repository setup
+   - Configure branch protection and issue templates
+
+2. **Create comprehensive tests**
+   - Use the shell-script-quality skill for test setup
+   - Add BATS tests for all scripts
+
+3. **Add CI/CD with GitHub Actions**
+   - Use the github-repo-management skill for workflow setup
+   - Configure automated testing, linting, and releases
+
+4. **Research best practices**
+   - Use the web-research skill to find latest best practices
+   - Research similar successful plugins
+
+5. **Write user documentation**
+   - README.md with installation and usage
+   - CONTRIBUTING.md for contributors
+   - CHANGES.md for changelog
+
+6. **Test locally before publishing**
+   - Local marketplace testing
+   - Manual testing of all commands and hooks
+
+7. **Publish to marketplace**
+   - Create GitHub release
+   - Verify installation from marketplace
+
+8. **Gather user feedback**
+   - Set up GitHub Discussions
+   - Monitor issues and PRs
+
+9. **Iterate and improve**
+   - Address user feedback
+   - Add new features based on usage patterns
+   - Keep dependencies updated
 
 ## Example: Complete Minimal Plugin
 

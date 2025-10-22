@@ -17,7 +17,8 @@ analyze_context() {
         echo "${CLAUDE_CONTEXT}" | tr ' ' '\n' | grep -E "^[a-zA-Z]{${MIN_KEYWORD_LENGTH},}$" | sort | uniq | head -10
     else
         # Fallback to analyzing any available context
-        local keywords=$(echo "${1:-}" | tr ' ' '\n' | grep -E "^[a-zA-Z]{${MIN_KEYWORD_LENGTH},}$" | sort | uniq | head -10)
+        local keywords
+        keywords=$(echo "${1:-}" | tr ' ' '\n' | grep -E "^[a-zA-Z]{${MIN_KEYWORD_LENGTH},}$" | sort | uniq | head -10)
         echo "$keywords"
     fi
 }
@@ -29,8 +30,10 @@ validate_suggestion() {
     local query_context="${3:-}"
     
     # Convert to lowercase for comparison
-    local lower_suggestion=$(echo "$suggestion" | tr '[:upper:]' '[:lower:]')
-    local lower_context=$(echo "$query_context" | tr '[:upper:]' '[:lower:]')
+    local lower_suggestion
+    lower_suggestion=$(echo "$suggestion" | tr '[:upper:]' '[:lower:]')
+    local lower_context
+    lower_context=$(echo "$query_context" | tr '[:upper:]' '[:lower:]')
     
     # Calculate relevance score
     local relevance_score=0
@@ -125,9 +128,12 @@ generate_suggestions() {
     for suggestion in "${suggestions[@]}"; do
         local validation_result
         validation_result=$(validate_suggestion "$suggestion" "$context_keywords" "$query_context")
-        local validation_status=$(echo "$validation_result" | cut -d'|' -f1)
-        local relevance_score=$(echo "$validation_result" | cut -d'|' -f2)
-        local validated_suggestion=$(echo "$validation_result" | cut -d'|' -f3-)
+        local validation_status
+        validation_status=$(echo "$validation_result" | cut -d'|' -f1)
+        local relevance_score
+        relevance_score=$(echo "$validation_result" | cut -d'|' -f2)
+        local validated_suggestion
+        validated_suggestion=$(echo "$validation_result" | cut -d'|' -f3-)
         
         if [[ "$validation_status" == "VALID" ]]; then
             valid_suggestions+=("$validated_suggestion (relevance: $relevance_score%)")
@@ -166,8 +172,9 @@ main() {
     fi
     
     # Analyze the context
-    local keywords=$(analyze_context "$context_input")
-    
+    local keywords
+    keywords=$(analyze_context "$context_input")
+
     # If we have Claude's current query/command, extract keywords from it too
     local current_query="${2:-}"
     if [[ -z "$keywords" && -n "$current_query" ]]; then
