@@ -43,17 +43,17 @@ jobs:
           VERSION="${{ steps.version.outputs.VERSION }}"
           cat > dist/package.json << EOF
           {
-            "name": "@do-ops885/gemini-search-plugin",
+            "name": "@d-oit/gemini-search-plugin",
             "version": "${VERSION}",
             "description": "Advanced web search plugin for Claude Code using Gemini CLI",
             "repository": {
               "type": "git",
-              "url": "https://github.com/do-ops885/gemini-search-plugin.git"
+              "url": "https://github.com/d-oit/gemini-search-plugin.git"
             },
             "keywords": ["claude-code", "plugin", "gemini", "search", "web-search"],
-            "author": "d.o. <do-tester@proton.me>",
+            "author": "d-oit <do-tester@proton.me>",
             "license": "MIT",
-            "homepage": "https://github.com/do-ops885/gemini-search-plugin#readme"
+            "homepage": "https://github.com/d-oit/gemini-search-plugin#readme"
           }
           EOF
 
@@ -75,7 +75,7 @@ jobs:
           ## From GitHub Release
 
           \`\`\`bash
-          /plugin add https://github.com/do-ops885/gemini-search-plugin
+          /plugin add https://github.com/d-oit/gemini-search-plugin
           \`\`\`
 
           ## From Package Archive
@@ -104,7 +104,7 @@ jobs:
 
           ## Documentation
 
-          Full documentation: https://github.com/do-ops885/gemini-search-plugin
+          Full documentation: https://github.com/d-oit/gemini-search-plugin
           EOF
 
       - name: Upload installation instructions
@@ -130,7 +130,7 @@ jobs:
 
               ### Installation
               \`\`\`bash
-              /plugin add https://github.com/do-ops885/gemini-search-plugin
+              /plugin add https://github.com/d-oit/gemini-search-plugin
               \`\`\`
 
               ### Package Assets

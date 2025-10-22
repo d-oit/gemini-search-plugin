@@ -3,7 +3,7 @@
   "version": "0.1.2",
   "description": "Advanced web search plugin with caching, analytics, content extraction, and validation",
   "author": {
-    "name": "d.o."
+    "name": "d-oit"
   },
   "license": "MIT",
   "commands": "./commands/*.md",

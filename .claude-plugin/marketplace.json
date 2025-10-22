@@ -1,7 +1,7 @@
 {
   "name": "gemini-search-dev",
   "owner": {
-    "name": "d.o.",
+    "name": "d-oit",
     "email": "do-tester@proton.me"
   },
   "plugins": [
@@ -11,7 +11,7 @@
       "description": "Advanced web search plugin using the Gemini CLI in headless mode with google_web_search tool restriction, providing caching, analytics, content extraction, and validation",
       "version": "0.1.2",
       "author": {
-        "name": "d.o."
+        "name": "d-oit"
       },
       "license": "MIT",
       "category": "productivity",
