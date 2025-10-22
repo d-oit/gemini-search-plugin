@@ -57,8 +57,8 @@ Before contributing, ensure you have:
 1. **Fork and clone** the repository:
 
    ```bash
-   git clone https://github.com/YOUR-USERNAME/gemini-search.git
-   cd gemini-search
+   git clone https://github.com/d-oit/gemini-search-plugin.git
+   cd gemini-search-plugin
    ```
 
 2. **Create a feature branch**:
