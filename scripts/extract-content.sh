@@ -7,8 +7,8 @@ set -euo pipefail
 
 # Configuration
 TEMP_DIR="${TEMP_DIR:-/tmp/gemini-content-extractor}"
-LOG_FILE="${LOG_FILE:-/tmp/gemini-content-extractor.log}"
-ERROR_LOG_FILE="${ERROR_LOG_FILE:-/tmp/gemini-content-extractor-errors.log}"
+export LOG_FILE="${LOG_FILE:-/tmp/gemini-content-extractor.log}"
+export ERROR_LOG_FILE="${ERROR_LOG_FILE:-/tmp/gemini-content-extractor-errors.log}"
 TIMEOUT_SECONDS="${TIMEOUT_SECONDS:-15}"
 MAX_CONTENT_SIZE="${MAX_CONTENT_SIZE:-100000}"  # 100KB limit
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

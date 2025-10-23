@@ -27,7 +27,7 @@ jobs:
 
       - name: Validate version in plugin.json
         run: |
-          PLUGIN_VERSION=$(jq -r '.version' plugin.json)
+          PLUGIN_VERSION=$(jq -r '.version' .claude-plugin/plugin.json)
           TAG_VERSION="${{ steps.tag_version.outputs.VERSION }}"
           if [ "$PLUGIN_VERSION" != "$TAG_VERSION" ]; then
             echo "Version mismatch: plugin.json has $PLUGIN_VERSION but tag is $TAG_VERSION"
@@ -62,9 +62,9 @@ jobs:
         run: |
           VERSION="${{ steps.tag_version.outputs.VERSION }}"
 
-          # Extract changelog section for this version from CHANGES.md
-          if [ -f CHANGES.md ]; then
-            NOTES=$(sed -n "/## \[${VERSION}\]/,/## \[/p" CHANGES.md | sed '$d' | tail -n +2)
+          # Extract changelog section for this version from CHANGELOG.md
+          if [ -f CHANGELOG.md ]; then
+            NOTES=$(sed -n "/## \[${VERSION}\]/,/## \[/p" CHANGELOG.md | sed '$d' | tail -n +2)
             if [ -z "$NOTES" ]; then
               NOTES="Release ${VERSION}"
             fi

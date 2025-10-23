@@ -8,8 +8,8 @@ set -euo pipefail
 # Configuration
 CACHE_DIR="${CACHE_DIR:-/tmp/gemini-search-cache}"
 CACHE_TTL="${CACHE_TTL:-3600}" # 1 hour in seconds
-LOG_FILE="${LOG_FILE:-/tmp/gemini-search.log}"
-ERROR_LOG_FILE="${ERROR_LOG_FILE:-/tmp/gemini-search-errors.log}"
+export LOG_FILE="${LOG_FILE:-/tmp/gemini-search.log}"
+export ERROR_LOG_FILE="${ERROR_LOG_FILE:-/tmp/gemini-search-errors.log}"
 MAX_RETRIES="${MAX_RETRIES:-3}"
 RETRY_DELAY="${RETRY_DELAY:-1}" # seconds
 ENABLE_LINK_VALIDATION="${ENABLE_LINK_VALIDATION:-true}" # Enable static link validation

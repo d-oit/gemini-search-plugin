@@ -6,9 +6,9 @@ set -euo pipefail
 
 # Configuration
 ANALYTICS_DIR="${ANALYTICS_DIR:-/tmp/gemini-analytics}"
-LOG_FILE="${ANALYTICS_DIR}/search-analytics.log"
+export LOG_FILE="${ANALYTICS_DIR}/search-analytics.log"
 AGGREGATE_FILE="${ANALYTICS_DIR}/search-aggregates.json"
-ERROR_LOG_FILE="${ANALYTICS_DIR}/search-analytics-errors.log"
+export ERROR_LOG_FILE="${ANALYTICS_DIR}/search-analytics-errors.log"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Source common logging functions
