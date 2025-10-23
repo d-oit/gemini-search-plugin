@@ -15,29 +15,9 @@ RETRY_DELAY="${RETRY_DELAY:-1}" # seconds
 ENABLE_LINK_VALIDATION="${ENABLE_LINK_VALIDATION:-true}" # Enable static link validation
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Logging function
-log_message() {
-    local level="$1"
-    local message="$2"
-    local timestamp
-    timestamp=$(date -Iseconds)
-    local log_entry="{\"timestamp\":\"$timestamp\",\"level\":\"$level\",\"message\":\"$message\"}"
-    
-    echo "$log_entry" >> "$LOG_FILE"
-    # Also output to stderr for immediate visibility
-    echo "$log_entry" >&2
-}
-
-# Error logging function
-log_error() {
-    local message="$1"
-    local timestamp
-    timestamp=$(date -Iseconds)
-    local log_entry="{\"timestamp\":\"$timestamp\",\"level\":\"ERROR\",\"message\":\"$message\"}"
-    
-    echo "$log_entry" >> "$ERROR_LOG_FILE"
-    echo "$log_entry" >&2
-}
+# Source common logging functions
+# shellcheck source=scripts/common-logging.sh
+source "${SCRIPT_DIR}/common-logging.sh"
 
 # Create cache and log directories if they don't exist
 mkdir -p "$CACHE_DIR"
@@ -209,8 +189,10 @@ perform_search() {
         # Execute Gemini CLI in headless mode with grounded web search
         # The --yolo flag auto-approves the google_web_search tool usage
         # The settings.json file restricts the CLI to only use google_web_search
+        # Use explicit tool invocation format to force raw results
         local result
-        if result=$(gemini -p "/tool:googleSearch query:\"$query\" raw:true" --yolo --output-format json -m "gemini-2.5-flash" 2>/dev/null); then
+        local search_prompt="Execute google_web_search for query: \"$query\". Format output as: 'Web search results for \"$query\":\n\n[For each result: Title | URL | Snippet]\n\nDo NOT add any analysis, interpretation, clarification questions, or additional commentary. Just list the search results exactly as received from the tool."
+        if result=$(gemini -p "$search_prompt" --yolo --output-format json -m "gemini-2.5-flash" 2>/dev/null); then
             if [[ -n "$result" ]]; then
                 log_message "INFO" "Gemini search successful on attempt $attempt"
                 echo "$result"
@@ -278,6 +260,8 @@ search() {
 
 # Function to get analytics with error handling
 get_stats() {
+    echo "=== Cache Statistics ==="
+
     if [[ -f "$LOG_FILE" ]]; then
         local total_searches=0
         local cache_hits=0
@@ -290,17 +274,16 @@ get_stats() {
         # Count cache hits and misses if analytics log has this data
         cache_hits=$(grep -c "cache_hit" "$LOG_FILE" 2>/dev/null) || cache_hits=0
         cache_misses=$((total_searches - cache_hits))
-        
+
         if [[ $total_searches -gt 0 ]]; then
             cache_hit_rate=$((cache_hits * 100 / total_searches))
         fi
 
-        echo "=== Cache Statistics ==="
         echo "Total searches: $total_searches"
         echo "Cache hits: $cache_hits"
         echo "Cache misses: $cache_misses"
         echo "Cache hit rate: ${cache_hit_rate}%"
-        
+
         # Add more detailed analytics
         local log_size
         log_size=$(wc -c < "$LOG_FILE" 2>/dev/null || echo 0)

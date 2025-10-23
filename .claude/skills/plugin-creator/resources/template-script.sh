@@ -5,6 +5,7 @@
 set -euo pipefail
 
 # Configuration
+# shellcheck disable=SC2034  # SCRIPT_DIR is a template variable for user customization
 SCRIPT_DIR="${CLAUDE_PLUGIN_ROOT}/scripts"
 LOG_FILE="${LOG_FILE:-/tmp/my-plugin.log}"
 ERROR_LOG="${ERROR_LOG:-/tmp/my-plugin-errors.log}"

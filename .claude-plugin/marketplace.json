@@ -9,7 +9,7 @@
       "name": "gemini-search",
       "source": "./",
       "description": "Advanced web search plugin using the Gemini CLI in headless mode with google_web_search tool restriction, providing caching, analytics, content extraction, and validation",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "author": {
         "name": "d-oit"
       },

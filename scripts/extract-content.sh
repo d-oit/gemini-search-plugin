@@ -2,52 +2,36 @@
 # Dynamic Content Extractor for Gemini Search Plugin
 # Extracts and validates content from websites using Gemini grounded web server
 
+# Set strict error handling
+set -euo pipefail
+
 # Configuration
 TEMP_DIR="${TEMP_DIR:-/tmp/gemini-content-extractor}"
 LOG_FILE="${LOG_FILE:-/tmp/gemini-content-extractor.log}"
 ERROR_LOG_FILE="${ERROR_LOG_FILE:-/tmp/gemini-content-extractor-errors.log}"
 TIMEOUT_SECONDS="${TIMEOUT_SECONDS:-15}"
 MAX_CONTENT_SIZE="${MAX_CONTENT_SIZE:-100000}"  # 100KB limit
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Source common logging functions
+# shellcheck source=scripts/common-logging.sh
+source "${SCRIPT_DIR}/common-logging.sh"
 
 # Create temp directory
 mkdir -p "$TEMP_DIR"
 
-# Logging function
-log_message() {
-    local level="$1"
-    local message="$2"
-    local timestamp
-    timestamp=$(date -Iseconds)
-    local log_entry="{\"timestamp\":\"$timestamp\",\"level\":\"$level\",\"message\":\"$message\"}"
-    
-    echo "$log_entry" >> "$LOG_FILE"
-    echo "$log_entry" >&2
-}
-
-# Error logging function
-log_error() {
-    local message="$1"
-    local url="${2:-}"
-    local timestamp
-    timestamp=$(date -Iseconds)
-    local log_entry="{\"timestamp\":\"$timestamp\",\"level\":\"ERROR\",\"message\":\"$message\",\"url\":\"$url\"}"
-    
-    echo "$log_entry" >> "$ERROR_LOG_FILE"
-    echo "$log_entry" >&2
-}
-
 # Function to validate URL
 validate_url() {
     local url="$1"
-    
+
     if [[ -z "$url" ]]; then
-        log_error "Empty URL provided" "$url"
+        log_error "Empty URL provided"
         return 1
     fi
-    
+
     # Basic URL validation regex
     if [[ ! "$url" =~ ^https?://[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](\.[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9])*(:[0-9]{1,5})?(/.*)?$ ]]; then
-        log_error "Invalid URL format: $url" "$url"
+        log_error "Invalid URL format: $url"
         return 1
     fi
     
@@ -63,7 +47,7 @@ extract_text_content() {
 
     # Check if Gemini CLI is available
     if ! command -v gemini >/dev/null 2>&1; then
-        log_error "Gemini CLI not found. Please install Gemini CLI to use this plugin." "$url"
+        log_error "Gemini CLI not found for URL: $url"
         echo "Error: Gemini CLI is required. Install from: npm install -g @google/gemini-cli"
         return 1
     fi
@@ -89,7 +73,7 @@ extract_text_content() {
         fi
     fi
 
-    log_error "Failed to extract content from $url using Gemini CLI" "$url"
+    log_error "Failed to extract content from $url using Gemini CLI"
     echo "Error: Could not retrieve content from $url"
     return 1
 }

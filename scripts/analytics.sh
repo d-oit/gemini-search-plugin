@@ -1,35 +1,19 @@
 #!/bin/bash
 # Enhanced analytics tracking script for Gemini Search plugin with error handling and logging
 
+# Set strict error handling
+set -euo pipefail
+
 # Configuration
 ANALYTICS_DIR="${ANALYTICS_DIR:-/tmp/gemini-analytics}"
 LOG_FILE="${ANALYTICS_DIR}/search-analytics.log"
 AGGREGATE_FILE="${ANALYTICS_DIR}/search-aggregates.json"
 ERROR_LOG_FILE="${ANALYTICS_DIR}/search-analytics-errors.log"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Logging function
-log_message() {
-    local level="$1"
-    local message="$2"
-    local timestamp
-    timestamp=$(date -Iseconds)
-    local log_entry="{\"timestamp\":\"$timestamp\",\"level\":\"$level\",\"message\":\"$message\"}"
-
-    echo "$log_entry" >> "$LOG_FILE"
-    # Also output to stderr for immediate visibility
-    echo "$log_entry" >&2
-}
-
-# Error logging function
-log_error() {
-    local message="$1"
-    local timestamp
-    timestamp=$(date -Iseconds)
-    local log_entry="{\"timestamp\":\"$timestamp\",\"level\":\"ERROR\",\"message\":\"$message\"}"
-    
-    echo "$log_entry" >> "$ERROR_LOG_FILE"
-    echo "$log_entry" >&2
-}
+# Source common logging functions
+# shellcheck source=scripts/common-logging.sh
+source "${SCRIPT_DIR}/common-logging.sh"
 
 # Ensure analytics directory exists
 mkdir -p "$ANALYTICS_DIR" 2>/dev/null || {

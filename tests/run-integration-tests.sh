@@ -123,7 +123,9 @@ test_cache_operations() {
 
 # Test 6: Cache stats
 test_cache_stats() {
-    bash scripts/search-wrapper.sh stats 2>&1 | grep -q "Cache Statistics"
+    local output
+    output=$(bash scripts/search-wrapper.sh stats 2>&1)
+    echo "$output" | grep -q "Cache Statistics"
 }
 
 # Test 7: Error log creation
@@ -134,7 +136,9 @@ test_error_logging() {
 
 # Test 8: Analytics report generation
 test_analytics_report() {
-    bash scripts/analytics.sh report 2>&1 | grep -q "Search Analytics Report"
+    local output
+    output=$(bash scripts/analytics.sh report 2>&1)
+    echo "$output" | grep -q "Search Analytics Report"
 }
 
 # Test 9: Cache clear functionality
