@@ -53,6 +53,9 @@ run_test() {
 setup_test_env() {
     echo "Setting up test environment..."
 
+    # Clean up any existing test files from previous runs
+    rm -rf /tmp/gemini-test-* 2>/dev/null || true
+
     export CACHE_DIR="/tmp/gemini-test-cache"
     export ANALYTICS_DIR="/tmp/gemini-test-analytics"
     export LOG_FILE="/tmp/gemini-test.log"
